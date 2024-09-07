@@ -1,0 +1,17 @@
+[project]
+name = "neat-driver"
+version = "0.0.1"
+description = "Reinforcement Learning Agent for Pokemon Showdown"
+maintainers = [
+    {name = "Areeb Islam", email = "islamareeb.21@gmail.com"},
+]
+readme = "README.md"
+requires-python = ">=3.10"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Operating System :: OS Independent",
+]
+
+[tool.pytest.ini_options]
+pythonpath = "src"
+testpaths = ["tests"]
