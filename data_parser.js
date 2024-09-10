@@ -16,9 +16,14 @@ const makeRequest = async (url, headers, request_body) => {
 
   const jsonStr = await response.text();
   const json_obj = JSON.parse(jsonStr.substring(1));
-  if (json_obj.curuser.loggedin && json_obj.assertion.slice(0, 2) !== ';;') {
+  if (
+    json_obj.curuser !== undefined &&
+    json_obj.curuser.loggedin &&
+    json_obj.assertion.slice(0, 2) !== ';;'
+  ) {
     console.log('Successfully logged in! Response = ', json_obj);
     Assertion = json_obj.assertion;
+    Connection.send(`|/trn ${process.env.USERNAME},0,${Assertion}`);
     return { success: 'true' };
   } else {
     console.log('Failed to login! Response = ', json_obj);

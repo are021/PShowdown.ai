@@ -5,5 +5,5 @@
  */
 
 module.exports = {
-    'url': 'wss://sim3.psim.us/showdown/websocket',
+    'url': 'wss://sim3.psim.us/showdown/websocket'
 }

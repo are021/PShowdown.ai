@@ -4,19 +4,6 @@
  * @author Areeb Islam
  */
 
-// const Sim = require('pokemon-showdown');
-// stream = new Sim.BattleStream();
-
-// (async () => {
-//     for await (const output of stream) {
-//         console.log(output);
-//     }
-// })();
-
-// stream.write(`>start {"formatid":"gen7randombattle"}`);
-// stream.write(`>player p1 {"name":"Alice"}`);
-// stream.write(`>player p2 {"name":"Bob"}`);
-
 // Establish a socket connection
 const CONFIG = require('./config');
 const DATA_PARSER = require('./data_parser');
@@ -51,13 +38,12 @@ client.on('connect', function (connection) {
     console.log(message);
   });
 
-  // const server_message = '|/help';
-  const server_message = `|/challenge ${process.env.CHALLENGEDUSER}, [Gen 7] Random Battle`;
-  // Set a timer to send a message every 5 seconds
+  // const server_message = `|/challenge ${process.env.EXTERNAL}, [Gen 7] Random Battle`;
+  // // Set a timer to send a message every 5 seconds
   // setInterval(() => {
   //   console.log("Sending message: " + server_message);
-  //   connection.sendUTF(server_message);
-  // }, 5000);
+  //   Connection.send(server_message);
+  // }, 10000);
 });
 
 client.connect(CONFIG.url);
