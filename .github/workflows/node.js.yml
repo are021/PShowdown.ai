@@ -1,13 +1,8 @@
 name: ClientToServer CI
 
-on:
-
-  # Remove this after testing
-  push:
-    branches: [ "main" ]
-    
-  pull_request:
-    branches: [ "main" ]
+on: [push]
+  # pull_request:
+  #   branches: [ "main" ]
 
 jobs:
   build:
