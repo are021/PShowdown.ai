@@ -168,3 +168,7 @@ npm-debug.log
 yarn-error.log
 yarn-debug.log*
 yarn.lock
+
+# VSCODE Workspace Settings
+.vscode/
+*.code-workspace

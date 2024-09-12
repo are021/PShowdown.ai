@@ -35,7 +35,6 @@ client.on('connect', function (connection) {
     if (message.type === 'utf8') {
       DATA_PARSER.ParseResponseData(message);
     }
-    console.log(message);
   });
 });
 

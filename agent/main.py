@@ -7,10 +7,7 @@ import json
 # Connect the agent to the node.js server
 
 if __name__ == "__main__":
-    pass
-    # Connect to server stream
-
-    # Send Auth Credentials to the Backend
-
-    # Handle and control requests through the command line
-    
+    while True:
+        command = input("Enter 'start' to start the agent: ")
+        if command.lower() == "start":
+            break
