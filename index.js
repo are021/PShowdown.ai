@@ -37,13 +37,6 @@ client.on('connect', function (connection) {
     }
     console.log(message);
   });
-
-  // const server_message = `|/challenge ${process.env.EXTERNAL}, [Gen 7] Random Battle`;
-  // // Set a timer to send a message every 5 seconds
-  // setInterval(() => {
-  //   console.log("Sending message: " + server_message);
-  //   Connection.send(server_message);
-  // }, 10000);
 });
 
 client.connect(CONFIG.url);

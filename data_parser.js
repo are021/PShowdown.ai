@@ -52,9 +52,11 @@ const ParseResponseData = (data) => {
 
       url = 'https://play.pokemonshowdown.com/~~showdown/action.php';
 
-      makeRequest(url, headers, request_body);
+      return makeRequest(url, headers, request_body);
     }
   });
+
+  return { success: 'false' };
 };
 
 module.exports = {
