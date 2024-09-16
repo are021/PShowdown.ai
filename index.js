@@ -7,6 +7,7 @@
 // Establish a socket connection
 const CONFIG = require('./config');
 const DATA_PARSER = require('./data_parser');
+const CLIENTS = CONFIG.client_set;
 require('dotenv').config();
 
 var WebSocketClient = require('websocket').client;
@@ -35,7 +36,41 @@ client.on('connect', function (connection) {
     if (message.type === 'utf8') {
       DATA_PARSER.ParseResponseData(message);
     }
+
+    // Pass the client into the parsing function and then send the message to the python agent client
+    // for (let client of CLIENTS) {
+    //   // client.send(message.utf)
+    // }
   });
 });
 
 client.connect(CONFIG.url);
+
+const express = require('express');
+const app = express();
+const server = require('http').createServer(app);
+const WebSocket = require('ws');
+
+// Instantiates a websocket server
+const wss = new WebSocket.Server({ noServer: true });
+
+server.on('upgrade', (req, socket, head) => {
+  wss.handleUpgrade(req, socket, head, (ws) => {
+    wss.emit('connection', ws, req);
+  });
+});
+
+wss.on('connection', (ws) => {
+  CONFIG.clients.add(ws);
+  console.log('Connection Established with Client');
+  ws.on('message', (msg) => {
+    Connection.send(msg);
+  });
+  ws.on('close', () => {
+    console.log('Connection Closed with Client');
+  });
+});
+
+server.listen(CONFIG.port, () => {
+  console.log(`Server listening on port ${CONFIG.port}`);
+});

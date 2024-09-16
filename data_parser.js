@@ -4,6 +4,7 @@
  * @author Areeb Islam
  */
 
+const CONFIG = require('./config');
 const { parse } = require('path');
 const querystring = require('querystring');
 
@@ -32,18 +33,17 @@ const makeRequest = async (url, headers, request_body) => {
 };
 
 const ParseResponseData = (data) => {
-
-  if (data.utf8Data === undefined) { return { success: 'false' }; }
+  if (data.utf8Data === undefined) {
+    return { success: 'false' };
+  }
 
   if (data.utf8Data.includes('battle-gen9randombattle')) {
     console.log(test_str.utf8Data.includes('|request|'));
     test_str = test_str.utf8Data.split('\n')[1];
     if (test_str.includes('|request|')) {
-      test_str = JSON.parse(test_str.split('|request|')[1]);   
+      test_str = JSON.parse(test_str.split('|request|')[1]);
     }
   }
-
-
 
   const new_data = data.utf8Data.split('\n');
   // Process the challstr (for user authentication)
