@@ -4,13 +4,17 @@
  * @author Areeb Islam
  */
 
-// Establish a socket connection
-const CONFIG = require('./config');
-const DATA_PARSER = require('./data_parser');
-const CLIENTS = CONFIG.client_set;
-require('dotenv').config();
+import PROJECT_CONFIG from './config';
+import { ParseResponseData } from './data_parser';
+import dotenv from 'dotenv';
+import websocket from 'websocket';
+import express from 'express';
+import http from 'http';
+import {WebSocketServer} from 'ws';
 
-var WebSocketClient = require('websocket').client;
+dotenv.config();
+const CLIENTS = PROJECT_CONFIG.clients;
+var WebSocketClient = websocket.client;
 
 var client = new WebSocketClient();
 
@@ -24,7 +28,7 @@ client.on('connectFailed', function (error) {
 });
 
 client.on('connect', function (connection) {
-  Connection = connection;
+  globalThis.Connection = connection;
   connection.on('error', function (error) {
     console.log('Connection Error: ' + error.toString());
   });
@@ -33,26 +37,19 @@ client.on('connect', function (connection) {
   });
   connection.on('message', function (message) {
     // Process the message into a json object
+    console.log('Server Message', message);
     if (message.type === 'utf8') {
-      DATA_PARSER.ParseResponseData(message);
+      ParseResponseData(message);
     }
-
-    // Pass the client into the parsing function and then send the message to the python agent client
-    // for (let client of CLIENTS) {
-    //   // client.send(message.utf)
-    // }
   });
 });
 
-client.connect(CONFIG.url);
+client.connect(PROJECT_CONFIG.url);
 
-const express = require('express');
 const app = express();
-const server = require('http').createServer(app);
-const WebSocket = require('ws');
-
+const server = http.createServer(app);
 // Instantiates a websocket server
-const wss = new WebSocket.Server({ noServer: true });
+const wss = new WebSocketServer({ noServer: true });
 
 server.on('upgrade', (req, socket, head) => {
   wss.handleUpgrade(req, socket, head, (ws) => {
@@ -61,16 +58,21 @@ server.on('upgrade', (req, socket, head) => {
 });
 
 wss.on('connection', (ws) => {
-  CONFIG.clients.add(ws);
-  console.log('Connection Established with Client');
+  PROJECT_CONFIG.clients.add(ws);
+  console.log(
+    'Connection Established with Client',
+    PROJECT_CONFIG.clients.size
+  );
   ws.on('message', (msg) => {
-    Connection.send(msg);
+    if (msg.toString() !== '' && globalThis.Connection !== null) {
+      globalThis.Connection.send(msg.toString());
+    }
   });
   ws.on('close', () => {
     console.log('Connection Closed with Client');
   });
 });
 
-server.listen(CONFIG.port, () => {
-  console.log(`Server listening on port ${CONFIG.port}`);
+server.listen(PROJECT_CONFIG.port, () => {
+  console.log(`Server listening on port ${PROJECT_CONFIG.port}`);
 });

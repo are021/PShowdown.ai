@@ -4,11 +4,15 @@
  * @author Areeb Islam
  */
 
-const CONFIG = require('./config');
-const { parse } = require('path');
-const querystring = require('querystring');
+import PROJECT_CONFIG from './config';
+import { parse } from 'path';
+import querystring from 'querystring';
 
-const makeRequest = async (url, headers, request_body) => {
+// const CONFIG = require('./config');
+// const { parse } = require('path');
+// const querystring = require('querystring');
+
+const makeLoginRequest = async (url, headers, request_body) => {
   const response = await fetch(url, {
     method: 'POST',
     headers: headers,
@@ -23,13 +27,25 @@ const makeRequest = async (url, headers, request_body) => {
     json_obj.assertion.slice(0, 2) !== ';;'
   ) {
     console.log('Successfully logged in! Response = ', json_obj);
-    Assertion = json_obj.assertion;
-    Connection.send(`|/trn ${process.env.USERNAME},0,${Assertion}`);
+    globalThis.Assertion = json_obj.assertion;
+    globalThis.Connection.send(
+      `|/trn ${process.env.USERNAME},0,${globalThis.Assertion}`
+    );
+
     return { success: 'true' };
   } else {
     console.log('Failed to login! Response = ', json_obj);
     return { success: 'false' };
   }
+};
+
+const handleBattleRequest = (data) => {
+  let test_str = data.utf8Data.split('\n')[1];
+  console.log(test_str.indexOf('|request|') !== -1);
+  // if (test_str.includes('|request|')) {
+  //   test_str = JSON.parse(test_str.split('|request|')[1]);
+  //   console.log("VALUE OF TEST_STR", test_str);
+  // }
 };
 
 const ParseResponseData = (data) => {
@@ -38,11 +54,7 @@ const ParseResponseData = (data) => {
   }
 
   if (data.utf8Data.includes('battle-gen9randombattle')) {
-    console.log(test_str.utf8Data.includes('|request|'));
-    test_str = test_str.utf8Data.split('\n')[1];
-    if (test_str.includes('|request|')) {
-      test_str = JSON.parse(test_str.split('|request|')[1]);
-    }
+    return handleBattleRequest(data);
   }
 
   const new_data = data.utf8Data.split('\n');
@@ -59,19 +71,17 @@ const ParseResponseData = (data) => {
         challstr: challstr,
       };
 
-      headers = {
+      const headers = {
         'Content-Type': 'application/x-www-form-urlencoded',
       };
 
-      url = 'https://play.pokemonshowdown.com/~~showdown/action.php';
+      const url = 'https://play.pokemonshowdown.com/~~showdown/action.php';
 
-      return makeRequest(url, headers, request_body);
+      return makeLoginRequest(url, headers, request_body);
     }
   });
 
   return { success: 'false' };
 };
 
-module.exports = {
-  ParseResponseData: ParseResponseData,
-};
+export { ParseResponseData };
