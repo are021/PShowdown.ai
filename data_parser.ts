@@ -6,17 +6,20 @@
 
 import PROJECT_CONFIG from './config';
 import { parse } from 'path';
-import querystring from 'querystring';
+import { LoginRequest } from './schemas/client_to_server';
 
-// const CONFIG = require('./config');
-// const { parse } = require('path');
-// const querystring = require('querystring');
+const makeLoginRequest = async (
+  url: string,
+  headers: { 'Content-Type': string },
+  request_body: LoginRequest
+) => {
 
-const makeLoginRequest = async (url, headers, request_body) => {
+  const params = new URLSearchParams(request_body as any); // Type assertion
+  const url_params = params.toString();
   const response = await fetch(url, {
     method: 'POST',
     headers: headers,
-    body: querystring.stringify(request_body),
+    body: url_params,
   });
 
   const jsonStr = await response.text();
@@ -39,16 +42,19 @@ const makeLoginRequest = async (url, headers, request_body) => {
   }
 };
 
-const handleBattleRequest = (data) => {
-  let test_str = data.utf8Data.split('\n')[1];
-  console.log(test_str.indexOf('|request|') !== -1);
-  // if (test_str.includes('|request|')) {
-  //   test_str = JSON.parse(test_str.split('|request|')[1]);
-  //   console.log("VALUE OF TEST_STR", test_str);
-  // }
+const handleBattleRequest = (data: any) => {
+  let parsed_response: string = data.utf8Data.split('\n')[1] || '';
+  if (parsed_response.includes('|request|')) {
+    parsed_response = parsed_response.split('|request|')[1];
+    PROJECT_CONFIG.clients.forEach((client) => { 
+      if (client !== null) {
+        client.send(parsed_response);
+      }
+    });
+  }
 };
 
-const ParseResponseData = (data) => {
+const ParseResponseData = (data: any) => {
   if (data.utf8Data === undefined) {
     return { success: 'false' };
   }
@@ -59,15 +65,15 @@ const ParseResponseData = (data) => {
 
   const new_data = data.utf8Data.split('\n');
   // Process the challstr (for user authentication)
-  new_data.forEach((element) => {
+  new_data.forEach((element : string) => {
     if (element.includes('challstr')) {
       const parsed_challstr = element.split('|');
       const challstr = `${parsed_challstr[2]}|${parsed_challstr[3]}`;
       // Once the challstr is found, send the login request
-      const request_body = {
+      const request_body : LoginRequest = {
         act: 'login',
-        name: process.env.USERNAME,
-        pass: process.env.PASSWORD,
+        name: process.env.USERNAME || '',
+        pass: process.env.PASSWORD || '',
         challstr: challstr,
       };
 

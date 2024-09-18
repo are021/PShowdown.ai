@@ -10,18 +10,17 @@ import dotenv from 'dotenv';
 import websocket from 'websocket';
 import express from 'express';
 import http from 'http';
-import {WebSocketServer} from 'ws';
+import { WebSocketServer } from 'ws';
 
 dotenv.config();
-const CLIENTS = PROJECT_CONFIG.clients;
 var WebSocketClient = websocket.client;
 
 var client = new WebSocketClient();
 
-global.Connection = null;
+globalThis.Connection = null;
 
 // TODO change this assertion from being a global variable to a function
-global.Assertion = null;
+globalThis.Assertion = null;
 
 client.on('connectFailed', function (error) {
   console.log('Connect Error: ' + error.toString());
