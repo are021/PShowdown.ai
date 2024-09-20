@@ -48,7 +48,7 @@ const handleBattleRequest = (data: any) => {
     parsed_response = parsed_response.split('|request|')[1];
     PROJECT_CONFIG.clients.forEach((client) => { 
       if (client !== null) {
-        client.send(parsed_response);
+        client.send(JSON.stringify(parsed_response));
       }
     });
   }

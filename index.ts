@@ -69,6 +69,7 @@ wss.on('connection', (ws) => {
   });
   ws.on('close', () => {
     console.log('Connection Closed with Client');
+    PROJECT_CONFIG.clients.delete(ws);
   });
 });
 
