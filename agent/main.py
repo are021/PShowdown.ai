@@ -1,28 +1,40 @@
-import requests
-from dotenv import load_dotenv
-import os
+import asyncio
+from concurrent.futures import process
+import websockets
+from decisions import BattleState, DecisionMaker
 import json
 import asyncio
-import websockets
-port = 8000
 
-# Connect the agent to the node.js server
+battle_state = BattleState()
+decision_maker = DecisionMaker(3)
 
-web_url = f"ws://localhost:{port}"
+async def receive_message(ws):
+    try:
+        async for message in ws:
+            battle_state.updated_message(json.loads(message))
 
-async def send_message(ws, message):
-    await ws.send(message)
-    print(f"Sent: {message}")
+    except websockets.ConnectionClosedOK:
+        print("Connection closed by the server.")
 
+async def get_user_input():
+    loop = asyncio.get_event_loop()
+    return await loop.run_in_executor(None, input, "1 to start challenge, 2 to make a move: ")
 
-async def connect_to_server():
-    ws = await websockets.connect(web_url)
-    await ws.send("|/challenge pshowdown.ai, [GEN 9] Random Battle")
-    return 
+async def send_message(ws):
+    while True:
+        message = await get_user_input()  # Non-blocking user input
+        if message.lower() == "exit":
+            await ws.close()  # Close connection if user types 'exit'
+            break
+        if message == "1":
+            message = decision_maker.send_challenge()
+        else:
+            message = decision_maker.attack(battle_state)
+        await ws.send(message)
 
-if __name__ == "__main__":
-    asyncio.run(connect_to_server())
-    # while True:
-    #     command = input("Enter 'start' to start the agent: ")
-    #     if command.lower() == "start":
-    #         asyncio.run(send_message(ws, "start"))
+async def main():
+    uri = "ws://localhost:8000"  # Replace with your WebSocket server URI
+    async with websockets.connect(uri) as websocket:
+        await asyncio.gather(receive_message(websocket), send_message(websocket))
+
+asyncio.run(main())

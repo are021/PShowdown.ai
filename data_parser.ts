@@ -13,7 +13,6 @@ const makeLoginRequest = async (
   headers: { 'Content-Type': string },
   request_body: LoginRequest
 ) => {
-
   const params = new URLSearchParams(request_body as any); // Type assertion
   const url_params = params.toString();
   const response = await fetch(url, {
@@ -42,18 +41,43 @@ const makeLoginRequest = async (
   }
 };
 
-const handleBattleRequest = (data: any) => {
-  let parsed_response: string = data.utf8Data.split('\n')[1] || '';
-  if (parsed_response.includes('|request|')) {
-    parsed_response = parsed_response.split('|request|')[1];
-    PROJECT_CONFIG.clients.forEach((client) => { 
+/**
+ * Send back the battle request information to client
+ * @param data request body
+ */
+const handleBattleRequest = async (data: any) => {
+  const parsed_response: string = data.utf8Data.split('\n') || '';
+  const battle_id = parsed_response[0] || '';
+  let battle_data = parsed_response[1] || '';
+  if (battle_data.includes('|request|')) {
+    battle_data = battle_data.split('|request|')[1];   
+
+    // Check if battle_data is a valid JSON string
+    let requestData;
+    try {
+      requestData = JSON.parse(battle_data);
+    } catch (e) {
+      console.error("Invalid JSON string:", battle_data);
+      return; // Handle error appropriately
+    }
+    const response = {
+      battle_id: battle_id,
+      request: requestData, 
+    };
+
+    PROJECT_CONFIG.clients.forEach((client) => {
       if (client !== null) {
-        client.send(JSON.stringify(parsed_response));
+        client.send(JSON.stringify(response));
       }
     });
   }
 };
 
+/**
+ *
+ * @param data Server response data
+ * @returns JSON object indicating success or failure
+ */
 const ParseResponseData = (data: any) => {
   if (data.utf8Data === undefined) {
     return { success: 'false' };
@@ -65,12 +89,12 @@ const ParseResponseData = (data: any) => {
 
   const new_data = data.utf8Data.split('\n');
   // Process the challstr (for user authentication)
-  new_data.forEach((element : string) => {
+  new_data.forEach((element: string) => {
     if (element.includes('challstr')) {
       const parsed_challstr = element.split('|');
       const challstr = `${parsed_challstr[2]}|${parsed_challstr[3]}`;
       // Once the challstr is found, send the login request
-      const request_body : LoginRequest = {
+      const request_body: LoginRequest = {
         act: 'login',
         name: process.env.USERNAME || '',
         pass: process.env.PASSWORD || '',
