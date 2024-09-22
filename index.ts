@@ -5,7 +5,7 @@
  */
 
 import PROJECT_CONFIG from './config';
-import { ParseResponseData } from './data_parser';
+import { ParseResponseData } from './api';
 import dotenv from 'dotenv';
 import websocket from 'websocket';
 import express from 'express';
@@ -35,8 +35,6 @@ client.on('connect', function (connection) {
     console.log('echo-protocol Connection Closed');
   });
   connection.on('message', function (message) {
-    // Process the message into a json object
-    console.log('Server Message', message);
     if (message.type === 'utf8') {
       ParseResponseData(message);
     }

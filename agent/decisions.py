@@ -22,12 +22,17 @@ class BattleState():
     def updated_message(self, message):
         if "battle_id" in message:
             self.good_to_move = True
-            self.moves = message["request"]["active"]
+            if self.moves == None:
+                self.moves = message["request"]["active"]
             self.battle_id = message["battle_id"][1:]
         self.current_message = message 
     
     def get_current_message(self):
         return self.current_message
+    
+    def ready_to_attack(self):
+        return self.battle_id != "" and self.good_to_move
+
 
 
 
@@ -38,7 +43,10 @@ class DecisionMaker:
         # self.agent = agent
     
     def attack(self, BattleState):
+        BattleState.good_to_move = False
         return (f"{BattleState.battle_id}|/choose move {randint(1, 4)}")
+
     
     def send_challenge(self):
         return f"|/challenge pshowdown.ai, gen9randombattle"
+        
