@@ -11,7 +11,7 @@ decision_maker = DecisionMaker(3)
 async def receive_message(ws):
     try:
         async for message in ws:
-            print("Return Message", message)
+            print(message)
             battle_state.updated_message(json.loads(message))
 
     except websockets.ConnectionClosedOK:

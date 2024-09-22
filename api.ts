@@ -55,9 +55,9 @@ const handleBattleRequest = async (data: any) => {
     if (battle_data.includes('|request|')) {
       processChallengeRequest(battle_id, battle_data);
     }
-  }
-  else if (parsed_response.length > 2) {
-    sendToClients(data.utf8Data);
+  } else if (parsed_response.length > 2) {
+    const structured = { 'message': data.utf8Data };
+    sendToClients(JSON.stringify(structured));
   }
 };
 
