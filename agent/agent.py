@@ -1,6 +1,6 @@
 import numpy as np
 class ModelFree_Q():
-    def __init__(self, discount = 0.9, lr = 0.1, epsilon = 0.1, states = 18, brm = 1):
+    def __init__(self, discount = 0.9, lr = 0.1, epsilon = 0.1, states = 18**2, brm = 1):
 
         if lr < 0 or lr > 1:
             raise ValueError("Lambda must be between 0 and 1")
@@ -17,11 +17,31 @@ class ModelFree_Q():
             "Ground", "Flying", "Psychic", "Bug", "Rock", "Ghost", "Dragon", "Dark", 
             "Steel", "Fairy"
         ]
-        self.type_map = { pokemon_types[i] : i for i in range(len(pokemon_types)) }
+        self.type_map = { pokemon_types[i - 1] : i for i in range(1, len(pokemon_types) + 1) }
         self.base_reward_multiplier = brm
+
+    
+    '''
+    Map the type names to their respective indices in the Q-table
+    '''
+    def type_names_to_indices(self, type1, type2):
+        return self.type_map[type1], self.type_map[type2]
+
+    '''
+    Map the type tuples to their respective state in the Q-table
+    '''
+    def type_to_state_from_names(self, type1, type2):
+        i, j = self.type_names_to_indices(type1, type2)
+        return (i - 1) * 18 + (j - 1)
+
 
     def update_q_table(self, state, action, reward, next_state):
         q_value = self.q_table[action]
         max_next_q_value = np.max(self.q_table[next_state])
         new_q_value = (1 - self.lr) * q_value + self.lr * (reward + self.discount * max_next_q_value)
         self.q_table[action] = new_q_value
+
+
+if __name__ == "__main__":
+    mfq = ModelFree_Q()
+    print(mfq.type_map)

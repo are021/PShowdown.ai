@@ -23,7 +23,6 @@ async def get_user_input():
 async def send_message(ws):
     started = False
     while True:
-        print("Ready to move: ", battle_state.ready_to_attack())
         if started:
             await asyncio.sleep(5)
             if battle_state.ready_to_attack():
