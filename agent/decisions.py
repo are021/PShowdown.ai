@@ -26,6 +26,8 @@ class BattleState():
             self.battle_id = message["battle_id"][1:]
         if message["role"] == "server":
             self.good_to_move = True    
+        if "message" in message:
+            print(message["message"].split("\n"))
         self.current_message = message 
     
     def get_current_message(self):

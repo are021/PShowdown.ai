@@ -11,6 +11,7 @@ import websocket from 'websocket';
 import express from 'express';
 import http from 'http';
 import { WebSocketServer } from 'ws';
+import { Dex } from '@pkmn/dex';
 
 dotenv.config();
 var WebSocketClient = websocket.client;
@@ -71,6 +72,13 @@ wss.on('connection', (ws) => {
   });
 });
 
+
+// Send the pokemon type back to the user
+app.post('/get_types', (req, res) => {
+  res.send(Dex.species.get(req.body.pokemon).types);
+});
+
 server.listen(PROJECT_CONFIG.port, () => {
   console.log(`Server listening on port ${PROJECT_CONFIG.port}`);
 });
+

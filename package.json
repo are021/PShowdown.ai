@@ -2,7 +2,7 @@
   "name": "pshowdown.ai",
   "version": "1.0.0",
   "description": "Implementing the public showdown api, and testing interactability",
-  "main": "index.js",
+  "main": "index.ts",
   "type": "module",
   "scripts": {
     "test": "jest",
@@ -20,11 +20,11 @@
   "author": "Areeb Islam",
   "license": "ISC",
   "dependencies": {
+    "@pkmn/dex": "^0.9.18",
     "@types/websocket": "^1.0.10",
     "@types/ws": "^8.5.12",
     "dotenv": "^16.4.5",
     "express": "^4.21.0",
-    "pokemon-showdown": "^0.11.9",
     "websocket": "^1.0.35",
     "ws": "^8.18.0"
   },
