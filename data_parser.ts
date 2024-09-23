@@ -15,6 +15,7 @@ export const processChallengeRequest = (
     return; // Handle error appropriately
   }
   const response = {
+    role : "server",
     battle_id: battle_id,
     request: requestData,
   };

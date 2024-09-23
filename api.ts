@@ -56,7 +56,7 @@ const handleBattleRequest = async (data: any) => {
       processChallengeRequest(battle_id, battle_data);
     }
   } else if (parsed_response.length > 2) {
-    const structured = { 'message': data.utf8Data };
+    const structured = { "role": 'server', "message": data.utf8Data };
     sendToClients(JSON.stringify(structured));
   }
 };

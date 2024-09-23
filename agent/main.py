@@ -11,7 +11,6 @@ decision_maker = DecisionMaker(3)
 async def receive_message(ws):
     try:
         async for message in ws:
-            print(message)
             battle_state.updated_message(json.loads(message))
 
     except websockets.ConnectionClosedOK:
@@ -19,12 +18,16 @@ async def receive_message(ws):
 
 async def get_user_input():
     loop = asyncio.get_event_loop()
-    return await loop.run_in_executor(None, input, "1 to start challenge, 2 to make a move: ")
+    return await loop.run_in_executor(None, input, "1 to start challenge: ")
 
 async def send_message(ws):
+    started = False
     while True:
-        if battle_state.ready_to_attack():
-            await ws.send(decision_maker.attack(battle_state))
+        print("Ready to move: ", battle_state.ready_to_attack())
+        if started:
+            await asyncio.sleep(5)
+            if battle_state.ready_to_attack():
+                await ws.send(decision_maker.attack(battle_state))
         else:
             message = await get_user_input()  # Non-blocking user input
             if message.lower() == "exit":
@@ -32,8 +35,7 @@ async def send_message(ws):
                 break
             if message == "1":
                 message = decision_maker.send_challenge()
-            else:
-                message = decision_maker.attack(battle_state)
+                started = True
             await ws.send(message)
 
 async def main():

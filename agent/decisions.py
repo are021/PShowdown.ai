@@ -8,6 +8,8 @@ class BattleState():
         self.moves = None
         self.current_message = ""
         self.good_to_move = False
+        self.user_pokemon = None
+        self.enemy_pokemon = None
 
         # Single of Double Battle
         # List of the pokemon
@@ -21,10 +23,9 @@ class BattleState():
 
     def updated_message(self, message):
         if "battle_id" in message:
-            self.good_to_move = True
-            if self.moves == None:
-                self.moves = message["request"]["active"]
             self.battle_id = message["battle_id"][1:]
+        if message["role"] == "server":
+            self.good_to_move = True    
         self.current_message = message 
     
     def get_current_message(self):
@@ -42,9 +43,9 @@ class DecisionMaker:
         self.rqid = rqid
         # self.agent = agent
     
-    def attack(self, BattleState):
-        BattleState.good_to_move = False
-        return (f"{BattleState.battle_id}|/choose move {randint(1, 4)}")
+    def attack(self, bs):
+        bs.good_to_move = False
+        return (f"{bs.battle_id}|/choose move {randint(1, 4)}")
 
     
     def send_challenge(self):
