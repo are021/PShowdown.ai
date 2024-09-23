@@ -4,6 +4,7 @@ import websockets
 from decisions import BattleState, DecisionMaker
 import json
 import asyncio
+import requests
 
 battle_state = BattleState()
 decision_maker = DecisionMaker(3)

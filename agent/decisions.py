@@ -21,13 +21,23 @@ class BattleState():
     def add_moves(self, moves):
         self.moves = moves
 
+    def get_pokemon_name(self, message):
+        pkmn_info = message[0].split('|')
+        return pkmn_info[2].split(': ')[1].lower()
+
     def updated_message(self, message):
         if "battle_id" in message:
             self.battle_id = message["battle_id"][1:]
         if message["role"] == "server":
             self.good_to_move = True    
         if "message" in message:
-            print(message["message"].split("\n"))
+            parsed_list = message["message"].split("\n")
+            # find p2a and p1a
+            resultp1a = list(filter(lambda x: "p1a" in x, parsed_list))
+            resultp2a = list(filter(lambda x: "p2a" in x, parsed_list))
+            if len(resultp1a) >= 1 and len(resultp2a) >= 1:
+                self.user_pokemon = self.get_pokemon_name(resultp1a)
+                self.enemy_pokemon = self.get_pokemon_name(resultp2a)
         self.current_message = message 
     
     def get_current_message(self):

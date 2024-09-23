@@ -72,13 +72,15 @@ wss.on('connection', (ws) => {
   });
 });
 
-
 // Send the pokemon type back to the user
 app.post('/get_types', (req, res) => {
-  res.send(Dex.species.get(req.body.pokemon).types);
+  const types = Dex.species.get(req.body.pokemon).types;
+  types.map((type) => {
+    return type.toLowerCase();
+  });
+  res.send(types);
 });
 
 server.listen(PROJECT_CONFIG.port, () => {
   console.log(`Server listening on port ${PROJECT_CONFIG.port}`);
 });
-
