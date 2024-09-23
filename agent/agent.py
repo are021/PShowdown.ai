@@ -23,5 +23,5 @@ class ModelFree_Q():
     def update_q_table(self, state, action, reward, next_state):
         q_value = self.q_table[action]
         max_next_q_value = np.max(self.q_table[next_state])
-        new_q_value = q_value + self.lr * (reward + self.discount * max_next_q_value - q_value)
+        new_q_value = (1 - self.lr) * q_value + self.lr * (reward + self.discount * max_next_q_value)
         self.q_table[action] = new_q_value
