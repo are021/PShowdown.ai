@@ -1,7 +1,6 @@
 import requests
 import json
 import h5py
-from agent import Q_Table
 
 
 class Q_Table_Manager():
@@ -32,7 +31,6 @@ class Q_Table_Manager():
             for pokemon in hf.keys():
                 q_tables[pokemon] = hf.get(pokemon)[:]
         return q_tables
-
 
 
     

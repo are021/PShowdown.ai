@@ -59,7 +59,8 @@ class BattleState():
 class DecisionMaker:
     def __init__(self, rqid):
         self.rqid = rqid
-        # self.agent = agent
+        
+
     
     def attack(self, bs):
         bs.good_to_move = False
