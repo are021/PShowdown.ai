@@ -4,6 +4,7 @@ attrs==24.2.0
 bidict==0.23.1
 certifi==2024.8.30
 charset-normalizer==3.3.2
+configparser==7.1.0
 frozenlist==1.4.1
 h11==0.14.0
 h5py==3.11.0

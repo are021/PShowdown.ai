@@ -5,6 +5,7 @@ from decisions import BattleState, DecisionMaker
 import json
 import asyncio
 import requests
+import configparser
 
 battle_state = BattleState()
 decision_maker = DecisionMaker(3)
@@ -50,3 +51,4 @@ async def main():
         await asyncio.gather(receive_message(websocket), send_message(websocket))
 
 asyncio.run(main())
+

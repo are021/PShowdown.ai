@@ -1,6 +1,7 @@
 from random import randint
 import requests
 import json
+import configparser
 
 
 class BattleState():
@@ -59,9 +60,9 @@ class BattleState():
 class DecisionMaker:
     def __init__(self, rqid):
         self.rqid = rqid
+        self.cf = configparser.ConfigParser()
+        self.cf.read("config.ini")
         
-
-    
     def attack(self, bs):
         bs.good_to_move = False
         return (f"{bs.battle_id}|/choose move {randint(1, 4)}")
@@ -69,8 +70,8 @@ class DecisionMaker:
     
     def send_challenge(self):
         team_string = requests.get("http://localhost:8000/get_team").json()
-        return [f"|/utm {json.dumps(team_string)}", "|/challenge mecca12, gen9doublesubers"]
+        return [f"|/utm {json.dumps(team_string)}", f"|/challenge {self.cf.get("PLAYER", "Challenger")}, {self.cf.get("BATTLE", 'Format')}"]
     
     def choose_order(self, bs):
-        return f"{bs.battle_id}|/choose team 1234"
+        return f"{bs.battle_id}|/choose team {self.cf.getint("BATTLE", "PokemonOrder")}"
         
