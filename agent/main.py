@@ -19,12 +19,13 @@ async def receive_message(ws):
 
 async def get_user_input():
     loop = asyncio.get_event_loop()
-    return await loop.run_in_executor(None, input, "1 to start challenge: ")
+    return await loop.run_in_executor(None, input, "1 to start challenge, 2 to choose order: ")
 
 async def send_message(ws):
     started = False
+    chosen = False
     while True:
-        if started:
+        if started and chosen:
             await asyncio.sleep(5)
             if battle_state.ready_to_attack():
                 await ws.send(decision_maker.attack(battle_state))
@@ -34,9 +35,14 @@ async def send_message(ws):
                 await ws.close()  # Close connection if user types 'exit'
                 break
             if message == "1":
-                message = decision_maker.send_challenge()
+                messages = decision_maker.send_challenge()
                 started = True
-            await ws.send(message)
+                for message in messages:
+                    await ws.send(message)
+            if message == "2":
+                choices = decision_maker.choose_order(battle_state)
+                chosen = True
+                await ws.send(choices)
 
 async def main():
     uri = "ws://localhost:8000"  # Replace with your WebSocket server URI

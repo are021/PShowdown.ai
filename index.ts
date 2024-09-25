@@ -12,6 +12,7 @@ import express from 'express';
 import http from 'http';
 import { WebSocketServer } from 'ws';
 import { Dex } from '@pkmn/dex';
+import { Teams } from '@pkmn/sim';
 
 dotenv.config();
 var WebSocketClient = websocket.client;
@@ -46,6 +47,7 @@ client.connect(PROJECT_CONFIG.url);
 
 const app = express();
 const server = http.createServer(app);
+app.use(express.json());
 // Instantiates a websocket server
 const wss = new WebSocketServer({ noServer: true });
 
@@ -74,11 +76,22 @@ wss.on('connection', (ws) => {
 
 // Send the pokemon type back to the user
 app.post('/get_types', (req, res) => {
-  const types = Dex.species.get(req.body.pokemon).types;
-  types.map((type) => {
-    return type.toLowerCase();
+  console.log('Request received', req.body);
+  const pokemon = req.body.pokemon;
+  let returnTypes: string[][] = [];
+  pokemon.forEach((pkmn: string) => {
+    const types = Dex.species.get(pkmn).types;
+    types.map((type) => {
+      return type.toLowerCase();
+    });
+    returnTypes.push(types);
   });
-  res.send(types);
+  res.send(returnTypes);
+});
+
+app.get('/get_team', (req, res) => {
+  const teams = Teams.import(PROJECT_CONFIG.sample_team);
+  res.send(teams);
 });
 
 server.listen(PROJECT_CONFIG.port, () => {

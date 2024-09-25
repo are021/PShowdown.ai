@@ -21,6 +21,7 @@
   "license": "ISC",
   "dependencies": {
     "@pkmn/dex": "^0.9.18",
+    "@pkmn/sim": "^0.9.18",
     "@types/websocket": "^1.0.10",
     "@types/ws": "^8.5.12",
     "dotenv": "^16.4.5",

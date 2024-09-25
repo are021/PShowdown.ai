@@ -1,4 +1,6 @@
-from random import choice, randint
+from random import randint
+import requests
+import json
 
 
 class BattleState():
@@ -32,19 +34,23 @@ class BattleState():
             self.good_to_move = True    
         if "message" in message:
             parsed_list = message["message"].split("\n")
-            # find p2a and p1a
+            print("Server Message", parsed_list)
+
+            # Find the Player 1 and Player 2
             resultp1a = list(filter(lambda x: "p1a" in x, parsed_list))
             resultp2a = list(filter(lambda x: "p2a" in x, parsed_list))
             if len(resultp1a) >= 1 and len(resultp2a) >= 1:
                 self.user_pokemon = self.get_pokemon_name(resultp1a)
                 self.enemy_pokemon = self.get_pokemon_name(resultp2a)
+
+            # TODO need to add some kind of parser for the damage done
         self.current_message = message 
     
     def get_current_message(self):
         return self.current_message
     
     def ready_to_attack(self):
-        return self.battle_id != "" and self.good_to_move
+        return self.battle_id != "" and self.good_to_move and self.user_pokemon and self.enemy_pokemon
 
 
 
@@ -61,5 +67,9 @@ class DecisionMaker:
 
     
     def send_challenge(self):
-        return f"|/challenge pshowdown.ai, gen9randombattle"
+        team_string = requests.get("http://localhost:8000/get_team").json()
+        return [f"|/utm {json.dumps(team_string)}", "|/challenge mecca12, gen9doublesubers"]
+    
+    def choose_order(self, bs):
+        return f"{bs.battle_id}|/choose team 1234"
         

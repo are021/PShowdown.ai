@@ -176,3 +176,4 @@ yarn.lock
 
 # Schema Examples
 schemas/*.json
+agent/model_free_tables/*.h5
