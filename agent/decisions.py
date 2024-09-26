@@ -14,6 +14,7 @@ class BattleState():
         self.user_pokemon = None
         self.enemy_pokemon = None
 
+        
         # Single of Double Battle
         # List of the pokemon
         # Active Pokemon, Opposing and Agent

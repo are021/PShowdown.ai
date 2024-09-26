@@ -1,5 +1,6 @@
 import numpy as np
-from team_setup import Q_Table_Manager
+from table_manager import Q_Table_Manager
+from math import round
 
 class Q_Table():
     def __init__(self, states = (18**2) * 10, actions = 5):
@@ -51,6 +52,12 @@ class ModelFree_Q():
         # Base reward - We will scale between 0 - 1
         self.base_reward_multiplier = brm
 
+    '''
+    Gracefully save Q-Tables to file - To save the state of the agent
+    '''
+    def save_q_tables(self):
+        Q_Table_Manager.save_q_tables(self.q_table, "./model_free_tables/q_tables.h5")
+
     
     '''
     Map the type names to their respective indices in the Q-table
@@ -61,19 +68,14 @@ class ModelFree_Q():
     '''
     Map the type tuples to their respective state in the Q-table
     '''
-    def type_to_state_from_names(self, type1, type2):
+    def type_to_state_from_names(self, type1, type2, damage):
         i, j = self.type_names_to_indices(type1, type2)
-        return (i - 1) * 18 + (j - 1)
+        return ((i - 1) * 18 + (j - 1)) + round(damage, -1)
 
 
-    def update_q_table(self, state, reward, next_state):
-        action = self.type_to_state_from_names(state[0], state[1])
+    def update_q_table(self, old_state, reward, next_state):
+        action, next_action = self.type_to_state_from_names(old_state[0], old_state[1], old_state[2]), self.type_to_state_from_names(next_state[0], next_state[1], next_state[2])
         q_value = self.q_table[action]
-        max_next_q_value = np.max(self.q_table[next_state])
+        max_next_q_value = np.max(self.q_table[next_action])
         new_q_value = (1 - self.lr) * q_value + self.lr * (reward + self.discount * max_next_q_value)
         self.q_table[action] = new_q_value
-
-
-if __name__ == "__main__":
-    mfq = ModelFree_Q()
-    print(mfq.type_map)
